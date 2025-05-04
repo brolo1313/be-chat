@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const chalk = require("chalk");
+import mongoose from "mongoose";
+import chalk from "chalk";
 
 const errorMsg = chalk.bgKeyword("white").redBright;
 const successMsg = chalk.bgKeyword("green").white;
@@ -9,8 +9,8 @@ const connectDB = async () => {
     await mongoose.connect(process.env.MONGO_URL);
     console.log(successMsg("Connected to DB"));
   } catch (error) {
-    console.log(errorMsg("BD not connected", error));
+    console.log(errorMsg("DB not connected", error));
   }
 };
 
-module.exports = connectDB;
+export default connectDB;

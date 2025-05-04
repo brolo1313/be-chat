@@ -1,12 +1,19 @@
-const express = require("express");
-const path = require("path");
+import express from "express";
+import path from "path";
+import mongoose from "mongoose";
+import cors from "cors";
+import dotenv from "dotenv";
+import connectDB from "./utils/db.js";
+import chalk from "chalk";
+import morgan from "morgan";
+import apiGoogleRoutes from "./routes/api-google-routes.js";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config();
 const app = express();
-const mongoose = require("mongoose");
-const cors = require("cors");
-const dotenv = require("dotenv").config();
-const connectDB = require("./utils/db");
-const chalk = require("chalk");
-const morgan = require("morgan");
 
 const errorMsg = chalk.bgKeyword("white").redBright;
 const successMsg = chalk.bgKeyword("green").white;
@@ -17,20 +24,9 @@ const corsOptions = {
   origin: ["http://localhost:4202", "http://localhost:4201"],
 };
 
+connectDB(); // Connect to MongoDB
+
 app.use(cors(corsOptions));
-
-// const apiChatRoutes = require("./routes/api-chat-routes");
-// const apiAuthRoutes = require("./routes/api-auth-routes");
-// const apiGoogleRoutes = require("./routes/api-google-routes");
-
-connectDB();
-
-// Start the server
-app.listen(PORT, (error) => {
-  error
-    ? console.log(errorMsg(error))
-    : console.log(successMsg(`Server listens on https//localhost:${PORT}`));
-});
 
 //MIDDLEWARE
 app.use(
@@ -41,29 +37,35 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json()); // Parse JSON request body
 
 //API
-// app.use(apiGoogleRoutes);
+app.use(apiGoogleRoutes);
 // app.use(apiAuthRoutes);
 // app.use(apiChatRoutes);
 
 app.use((req, res, next) => {
-  res.status(404).json({ message: 'Endpoint not found' });
+  res.status(404).json({ message: "Endpoint not found" });
 });
 
+// Start the server
+app.listen(PORT, (error) => {
+  error
+    ? console.log(errorMsg(error))
+    : console.log(successMsg(`Server listens on https//localhost:${PORT}`));
+});
 
 // 👇 add a global error handler after all the routes.
 app.use((err, req, res, next) => {
   err.statusCode = err?.statusCode || 500;
   err.code = err?.code || null;
-  err.originalError = err?.originalError || 'Internal Server Error';
+  err.originalError = err?.originalError || "Internal Server Error";
 
   const errorResponse = {
     status: err.statusCode,
     code: err.code,
     message: err.message,
-    originalError: err.originalError
+    originalError: err.originalError,
   };
 
   res.status(err.statusCode).json(errorResponse);
 });
 
-module.exports = app;
+export default app;

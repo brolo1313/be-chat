@@ -6,6 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon ./src/app.js"
   },
+  "type": "module",
   "author": "Andrew Yupin",
   "license": "ISC",
   "description": "",
