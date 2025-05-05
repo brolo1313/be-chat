@@ -3,12 +3,17 @@ import path from "path";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
-import connectDB from "./utils/db.js";
-import chalk from "chalk";
 import morgan from "morgan";
+import { fileURLToPath } from "url";
+import { successMsg, errorMsg } from "./utils/logger.js";
+
+import connectDB from "./utils/db.js";
 import apiGoogleRoutes from "./routes/api-google-routes.js";
 import apiChatRoutes from "./routes/api-chat-routes.js";
-import { fileURLToPath } from "url";
+import initSocketIO from "./sockets/index.js";
+
+import http from "http";
+import { Server } from "socket.io";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -16,8 +21,8 @@ const __dirname = path.dirname(__filename);
 dotenv.config();
 const app = express();
 
-const errorMsg = chalk.bgKeyword("white").redBright;
-const successMsg = chalk.bgKeyword("green").white;
+const server = http.createServer(app);
+initSocketIO(server);
 
 const PORT = process.env.PORT || 3000;
 
@@ -45,12 +50,9 @@ app.use((req, res, next) => {
   res.status(404).json({ message: "Endpoint not found" });
 });
 
-// Start the server
-app.listen(PORT, (error) => {
-  error
-    ? console.log(errorMsg(error))
-    : console.log(successMsg(`Server listens on https//localhost:${PORT}`));
-});
+server.listen(PORT, () =>
+  console.log(successMsg(`Server running on http://localhost:${PORT}`))
+);
 
 // 👇 add a global error handler after all the routes.
 app.use((err, req, res, next) => {
