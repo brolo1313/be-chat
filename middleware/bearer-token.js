@@ -12,11 +12,11 @@ const verifyByBearerToken = (req, res, next) => {
 
   jwt.verify(token, secretKey, (err, decoded) => {
     if (err) {
-      console.error("JWT verify error:", err); // Додай це!
-      return res.status(401).json({ message: "Invalid token" });
+      console.error("JWT verify error:", err);
+      return res.status(401).json({ message: "Unauthorized" });
     }
 
-    req.userId = decoded.id
+    req.userId = decoded.id;
     next();
   });
 };

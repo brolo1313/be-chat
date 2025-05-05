@@ -1,6 +1,6 @@
 import Profile from "../models/Profile.js";
 import Chat from "../models/Chat.js";
-import Message from '../models/Message.js'; 
+import Message from "../models/Message.js";
 const getAllChat = async (req, res) => {
   try {
     const userId = req.userId;
@@ -95,10 +95,16 @@ const deleteChat = async (req, res) => {
     }
 
     const chatIndex = profile.chats.indexOf(chatId);
-
     if (chatIndex === -1) {
       return res.status(404).json({ message: "Chat not found in profile" });
     }
+
+    const chat = await Chat.findById(chatId);
+    if (!chat) {
+      return res.status(404).json({ message: "Chat not found" });
+    }
+
+    await Chat.findByIdAndDelete(chatId);
 
     profile.chats.splice(chatIndex, 1);
     await profile.save();
@@ -141,10 +147,14 @@ const getMessagesByChatId = async (req, res) => {
     const { id: chatId } = req.params;
     const userId = req.userId;
 
-    const chat = await Chat.findOne({ _id: chatId, owner: userId }).populate('messages');
+    const chat = await Chat.findOne({ _id: chatId, owner: userId }).populate(
+      "messages"
+    );
 
     if (!chat) {
-      return res.status(404).json({ message: "Chat not found or access denied" });
+      return res
+        .status(404)
+        .json({ message: "Chat not found or access denied" });
     }
 
     res.status(200).json({
@@ -160,7 +170,6 @@ const getMessagesByChatId = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
 
 export {
   getAllChat,
