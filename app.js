@@ -7,6 +7,7 @@ import connectDB from "./utils/db.js";
 import chalk from "chalk";
 import morgan from "morgan";
 import apiGoogleRoutes from "./routes/api-google-routes.js";
+import apiChatRoutes from "./routes/api-chat-routes.js";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -24,7 +25,7 @@ const corsOptions = {
   origin: ["http://localhost:4202", "http://localhost:4201"],
 };
 
-connectDB(); // Connect to MongoDB
+connectDB();
 
 app.use(cors(corsOptions));
 
@@ -38,8 +39,7 @@ app.use(express.json()); // Parse JSON request body
 
 //API
 app.use(apiGoogleRoutes);
-// app.use(apiAuthRoutes);
-// app.use(apiChatRoutes);
+app.use(apiChatRoutes);
 
 app.use((req, res, next) => {
   res.status(404).json({ message: "Endpoint not found" });

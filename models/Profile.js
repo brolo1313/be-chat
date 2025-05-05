@@ -1,9 +1,12 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const profileSchema = new mongoose.Schema({
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    chats: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Chat' }],
+const profileSchema = new mongoose.Schema(
+  {
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    chats: [{ type: mongoose.Schema.Types.ObjectId, ref: "Chat" }],
     autoMessaging: { type: Boolean, default: false }, // авто-функція
-}, { timestamps: true });
+  },
+  { timestamps: true }
+);
 
-export default mongoose.model('Profile', profileSchema);
+export default mongoose.model("Profile", profileSchema);
