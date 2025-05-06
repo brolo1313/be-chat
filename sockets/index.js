@@ -6,6 +6,8 @@ import { handleBotReply } from "../helpers/handleBotReplay.js";
 import Chat from "../models/Chat.js";
 import Message from "../models/Message.js";
 import User from "../models/User.js";
+import Profile from "../models/Profile.js";
+import { startAutoBot, stopAutoBot } from "../utils/autoBot.js";
 
 export default function initSocketIO(server) {
   const io = new Server(server, {
@@ -32,6 +34,22 @@ export default function initSocketIO(server) {
       console.error("Token error", err);
       return socket.disconnect();
     }
+
+    socket.on("auto-bot-status", async (status) => {
+      console.log("auto-bot-status", status);
+      try {
+        const profile = await Profile.findOne({ user: userId });
+
+        if (!profile) return socket.emit("error", "Profile not found");
+        profile.autoMessaging = status;
+        profile.save();
+
+        status ? startAutoBot(io, socket, userId) : stopAutoBot();
+      } catch (err) {
+        console.log(err);
+        socket.emit("auto-bot-status error", err);
+      }
+    });
 
     socket.on("send-message", async ({ chatId, text }) => {
       try {
@@ -68,7 +86,6 @@ export default function initSocketIO(server) {
         });
 
         handleBotReply(io, chat, socket.id, botTimeouts);
-
       } catch (err) {
         console.error(errorMsg("Socket message error:", err));
         socket.emit("error", "Internal error");
@@ -76,6 +93,8 @@ export default function initSocketIO(server) {
     });
 
     socket.on("disconnect", () => {
+      stopAutoBot();
+
       const timeoutId = botTimeouts.get(socket.id);
       if (timeoutId) {
         clearTimeout(timeoutId);
