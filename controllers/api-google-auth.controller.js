@@ -2,6 +2,8 @@ import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import Profile from "../models/Profile.js";
 import Chat from "../models/Chat.js";
+import Message from "../models/Message.js";
+import { getDefaultChats, defaultMessages } from "../utils/defaultData.js";
 
 const handleGoogleAuth = async (req, res, next) => {
   try {
@@ -24,26 +26,20 @@ const handleGoogleAuth = async (req, res, next) => {
     let profile = await Profile.findOne({ user: user._id });
 
     if (!profile) {
-      const chats = await Chat.insertMany([
-        {
-          owner: user._id,
-          firstName: "John",
-          lastName: "Doe",
-          messages: [],
-        },
-        {
-          owner: user._id,
-          firstName: "Anna",
-          lastName: "Smith",
-          messages: [],
-        },
-        {
-          owner: user._id,
-          firstName: "Ed",
-          lastName: "Sheeran",
-          messages: [],
-        },
-      ]);
+      const chats = await Chat.insertMany(getDefaultChats(user));
+
+      const messagesToInsert = chats.flatMap((chat) =>
+        defaultMessages(chat, user)
+      );
+
+      const messages = await Message.insertMany(messagesToInsert);
+
+      for (const message of messages) {
+        await Chat.findByIdAndUpdate(message.chat, {
+          $push: { messages: message._id },
+          $set: { lastMessage: message._id },
+        });
+      }
 
       profile = await Profile.create({
         user: user._id,
