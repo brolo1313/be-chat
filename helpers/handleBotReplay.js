@@ -16,6 +16,8 @@ export async function handleBotReply(socket, chat, socketId, botTimeouts) {
       });
 
       chat.messages.push(botMessage._id);
+      chat.lastMessage = botMessage._id;
+
       await chat.save();
 
       socket.to(socketId).emit("new-message", {

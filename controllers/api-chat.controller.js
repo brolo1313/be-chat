@@ -6,9 +6,14 @@ const getAllChat = async (req, res) => {
     const userId = req.userId;
 
     const profile = await Profile.findOne({ user: userId })
-      .populate("chats")
-      .exec();
-
+    .populate({
+      path: "chats",
+      populate: {
+        path: "lastMessage",
+        model: "Message",
+      },
+    })
+    .exec();
     if (!profile) {
       return res.status(404).json({ message: "Profile not found" });
     }
@@ -158,12 +163,11 @@ const getMessagesByChatId = async (req, res) => {
     }
 
     res.status(200).json({
-      chatId: chat._id,
+      id: chat._id,
       owner: chat.owner,
       firstName: chat.firstName,
       lastName: chat.lastName,
       messages: chat.messages,
-      message: "Messages fetched successfully",
     });
   } catch (error) {
     console.error("Error fetching messages:", error);
