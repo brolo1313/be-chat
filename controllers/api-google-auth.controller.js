@@ -23,37 +23,38 @@ const handleGoogleAuth = async (req, res, next) => {
 
     let profile = await Profile.findOne({ user: user._id });
 
-    const chats = await Chat.insertMany([
-      {
-        owner: user._id,
-        firstName: "John",
-        lastName: "Doe",
-        messages: [],
-      },
-      {
-        owner: user._id,
-        firstName: "Anna",
-        lastName: "Smith",
-        messages: [],
-      },
-      {
-        owner: user._id,
-        firstName: "Ed",
-        lastName: "Sheeran",
-        messages: [],
-      },
-    ]);
-
     if (!profile) {
+      const chats = await Chat.insertMany([
+        {
+          owner: user._id,
+          firstName: "John",
+          lastName: "Doe",
+          messages: [],
+        },
+        {
+          owner: user._id,
+          firstName: "Anna",
+          lastName: "Smith",
+          messages: [],
+        },
+        {
+          owner: user._id,
+          firstName: "Ed",
+          lastName: "Sheeran",
+          messages: [],
+        },
+      ]);
+
       profile = await Profile.create({
         user: user._id,
         chats: chats.map((chat) => chat._id),
         autoMessaging: false,
       });
-    }
 
-    user.profile = profile._id;
-    await user.save();
+      user.profile = profile._id;
+
+      await user.save();
+    }
 
     const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY, {
       algorithm: "HS256",
