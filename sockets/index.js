@@ -67,7 +67,7 @@ export class Socket {
       if (status) {
         startAutoBot(this.io, socket, userId);
       } else {
-        stopAutoBot();
+        stopAutoBot(socket.id);
       }
     } catch (err) {
       console.log(err);
@@ -117,7 +117,7 @@ export class Socket {
   }
 
   handleDisconnect(socket) {
-    stopAutoBot();
+    stopAutoBot(socket.id);
 
     const timeoutId = this.botTimeouts.get(socket.id);
     if (timeoutId) {

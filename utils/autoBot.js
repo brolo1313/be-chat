@@ -1,11 +1,12 @@
 import Chat from "../models/Chat.js";
 import Message from "../models/Message.js";
 
-let intervalId;
+const intervalMap = new Map();
 export const startAutoBot = (io, socket, userId) => {
-  if (intervalId) return;
+  if (intervalMap.has(socket.id)) return;
 
-  intervalId = setInterval(async () => {
+  console.log("stop AutoBot for socket:", socket.id);
+  const intervalId = setInterval(async () => {
     try {
       const chats = await Chat.find({ owner: userId });
 
@@ -48,12 +49,15 @@ export const startAutoBot = (io, socket, userId) => {
       intervalId = null;
     }
   }, 10000);
+
+  intervalMap.set(socket.id, intervalId);
 };
 
-export const stopAutoBot = () => {
-  console.log("stopAutoBot");
+export const stopAutoBot = (socketId) => {
+  const intervalId = intervalMap.get(socketId);
   if (intervalId) {
+    console.log("stop AutoBot for socket:", socketId);
     clearInterval(intervalId);
-    intervalId = null;
+    intervalMap.delete(socketId);
   }
 };
