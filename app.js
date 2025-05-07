@@ -1,19 +1,17 @@
 import express from "express";
 import path from "path";
-import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import morgan from "morgan";
 import { fileURLToPath } from "url";
-import { successMsg, errorMsg } from "./utils/logger.js";
+import { successMsg } from "./utils/logger.js";
 
 import connectDB from "./utils/db.js";
 import apiGoogleRoutes from "./routes/api-google-routes.js";
 import apiChatRoutes from "./routes/api-chat-routes.js";
-import initSocketIO from "./sockets/index.js";
+import { initSocketIO } from "./sockets/index.js";
 
 import http from "http";
-import { Server } from "socket.io";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
