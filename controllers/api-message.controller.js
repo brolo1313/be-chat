@@ -1,36 +1,49 @@
 import Message from "../models/Message.js";
 import Chat from "../models/Chat.js";
 
-// const updateChat = async (req, res) => {
-//   try {
-//     const chatId = req.params.id;
-//     const userId = req.userId;
+const updateMessage = async (req, res) => {
+  try {
+    const messageId = req.params.id;
+    const { message: newMessage } = req.body;
 
-//     const profile = await Profile.findOne({ user: userId });
+    if (!newMessage?.trim()) {
+      return res.status(400).json({ message: "New message text is required" });
+    }
 
-//     if (!profile) {
-//       return res.status(404).json({ message: "Profile not found" });
-//     }
+    const updatedMessage = await Message.findByIdAndUpdate(
+      messageId,
+      {
+        text: newMessage,
+        updatedAt: new Date(),
+      },
+      { new: true }
+    );
 
-//     const chatIndex = profile.chats.indexOf(chatId);
+    if (!updatedMessage) {
+      return res.status(404).json({ message: "Message not found" });
+    }
 
-//     if (chatIndex === -1) {
-//       return res.status(404).json({ message: "Chat not found in profile" });
-//     }
+    const chat = await Chat.findById(updatedMessage.chat);
 
-//     const updatedChat = await Chat.findByIdAndUpdate(chatId, req.body, {
-//       new: true,
-//     });
+    const isLast = chat?.lastMessage?.toString() === messageId;
 
-//     res.status(200).json({
-//       updatedChat,
-//       message: "Chat updated successfully",
-//     });
-//   } catch (error) {
-//     console.error("Error updating chat:", error);
-//     res.status(500).json({ message: "Server error" });
-//   }
-// };
+    if (isLast) {
+      await Chat.updateOne(
+        { messages: messageId },
+        { $set: { lastMessage: messageId } }
+      );
+    }
+
+    res.status(200).json({
+      success: 1,
+      messageData: updatedMessage,
+      isLast,
+    });
+  } catch (error) {
+    console.error("Error updating chat:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
 
 const deleteMessage = async (req, res) => {
   try {
@@ -63,16 +76,19 @@ const deleteMessage = async (req, res) => {
         { $set: { lastMessage: newLastMessage } }
       );
     }
-    res
-      .status(200)
-      .json({
-        success: true,
-        messageData: { chatId: chat._id, messageId: messageId, text: message.text , isLast },
-      });
+    res.status(200).json({
+      success: true,
+      messageData: {
+        chatId: chat._id,
+        messageId: messageId,
+        text: message.text,
+        isLast,
+      },
+    });
   } catch (error) {
     console.error("Error deleting chat:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
 
-export { deleteMessage };
+export { deleteMessage, updateMessage };
