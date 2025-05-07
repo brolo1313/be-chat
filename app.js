@@ -9,8 +9,8 @@ import { successMsg } from "./utils/logger.js";
 import connectDB from "./utils/db.js";
 import apiGoogleRoutes from "./routes/api-google-routes.js";
 import apiChatRoutes from "./routes/api-chat-routes.js";
-import { initSocketIO } from "./sockets/index.js";
-
+import apiMessageRoutes from "./routes/api-message-routes.js";
+import initSocketIO from "./sockets/initSocket.js";
 import http from "http";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -43,6 +43,7 @@ app.use(express.json()); // Parse JSON request body
 //API
 app.use(apiGoogleRoutes);
 app.use(apiChatRoutes);
+app.use(apiMessageRoutes);
 
 app.use((req, res, next) => {
   res.status(404).json({ message: "Endpoint not found" });

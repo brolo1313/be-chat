@@ -8,7 +8,7 @@ import User from "../models/User.js";
 import Profile from "../models/Profile.js";
 import { startAutoBot, stopAutoBot } from "../utils/autoBot.js";
 
-export class SocketService {
+export class Socket {
   constructor(server) {
     this.io = new Server(server, {
       cors: {
@@ -127,8 +127,6 @@ export class SocketService {
 
     console.log("⛔ Socket disconnected:", socket.id);
   }
-}
 
-export function initSocketIO(server) {
-  new SocketService(server);
+
 }
