@@ -12,7 +12,7 @@ export class Socket {
   constructor(server) {
     this.io = new Server(server, {
       cors: {
-        origin: ["http://localhost:4202", "http://localhost:4201"],
+        origin: "*",
         methods: ["GET", "POST"],
       },
     });
@@ -127,6 +127,4 @@ export class Socket {
 
     console.log("⛔ Socket disconnected:", socket.id);
   }
-
-
 }
