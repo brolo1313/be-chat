@@ -23,6 +23,7 @@ export async function handleBotReply(socket, chat, socketId, botTimeouts) {
       socket.to(socketId).emit("new-message", {
         chatId: chat._id,
         message: botMessage,
+        fullName: `${chat.firstName} ${chat.lastName}`,
       });
     } catch (err) {
       console.error("Bot reply error:", err.message);

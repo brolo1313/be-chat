@@ -1,7 +1,7 @@
 import { Server } from "socket.io";
 import jwt from "jsonwebtoken";
 import { successMsg, errorMsg } from "../utils/logger.js";
-import { handleBotReply } from "../helpers/handleBotReplay.js";
+import { handleBotReply } from "../utils/handleBotReplay.js";
 import Chat from "../models/Chat.js";
 import Message from "../models/Message.js";
 import User from "../models/User.js";
