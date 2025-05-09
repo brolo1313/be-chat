@@ -46,7 +46,7 @@ app.use(apiChatRoutes);
 app.use(apiMessageRoutes);
 
 app.get("/", (req, res) => {
-  res.send("Server is awake 👋");
+  res.status(200).json({ message: "Server is awake 👋" });
 });
 
 app.use((req, res, next) => {
