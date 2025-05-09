@@ -45,8 +45,14 @@ app.use(apiGoogleRoutes);
 app.use(apiChatRoutes);
 app.use(apiMessageRoutes);
 
+app.get("/", (req, res) => {
+  res.send("Server is awake 👋");
+});
+
 app.use((req, res, next) => {
-  res.status(404).json({ message: "Endpoint not found" });
+  const error = new Error(`API works but path not found - ${req.originalUrl}`);
+  error.statusCode = 404;
+  next(error);
 });
 
 server.listen(PORT, () =>
