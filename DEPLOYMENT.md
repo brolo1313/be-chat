@@ -17,6 +17,7 @@ Used for local execution via `npm run dev`
 ```bash
 ENV=DEV
 MONGO_URL='mongodb://localhost:27017/chat'
+SECRET_KEY=''
 ```
 
 ### `.env.dev` - Development with Docker
@@ -24,6 +25,7 @@ Used in docker-compose for dev environment
 ```bash
 ENV=DEV
 MONGO_URL='mongodb://mongodb:27017/chat'
+SECRET_KEY=''
 ```
 **Note:** `mongodb` is the service name in docker-compose
 
@@ -32,6 +34,7 @@ Used for production with MongoDB Atlas
 ```bash
 ENV=PROD
 MONGO_URL='mongodb+srv://user:password@cluster0.xxxxx.mongodb.net/'
+SECRET_KEY=''
 ```
 
 ---

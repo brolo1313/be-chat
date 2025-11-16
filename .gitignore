@@ -1,2 +1,5 @@
+# Dependencies
 node_modules
-.env
+
+# Environment files (ignore only production)
+.env.prod
